@@ -1,24 +1,12 @@
 'use strict';
-
 const request = require('supertest');
-
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database(':memory:');
-
-const app = require('../src/app')(db);
-const buildSchemas = require('../src/schemas');
+let app = null;
 
 describe('API tests', () => {
-  before((done) => {
-    db.serialize((err) => {
-      if (err) {
-        return done(err);
-      }
-
-      buildSchemas(db);
-
-      done();
-    });
+  before(async () => {
+    const allDb = await require('../src/db/index').init();
+    const db = allDb.sqlite;
+    app = require('../src/app')(db);
   });
 
   describe('GET /health', () => {
@@ -26,6 +14,21 @@ describe('API tests', () => {
       request(app)
           .get('/health')
           .expect('Content-Type', /text/)
+          .expect(200, done);
+    });
+
+    it('POST /rides', (done) => {
+      request(app)
+          .post('/rides')
+          .send({
+            'start_lat': 10,
+            'start_long': 20,
+            'end_lat': 30,
+            'end_long': 40,
+            'rider_name': 'budi',
+            'driver_name': 'ipul',
+            'driver_vehicle': 'ferrari',
+          })
           .expect(200, done);
     });
   });

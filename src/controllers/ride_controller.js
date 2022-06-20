@@ -1,4 +1,5 @@
 const RideServices = require('../services/ride_services');
+const appLogger = require('../helpers/logger');
 
 module.exports = (db) => {
   return {
@@ -17,7 +18,7 @@ module.exports = (db) => {
         }
         res.send(data);
       } catch (err) {
-        console.log(err);
+        appLogger(err);
         return res.send({
           error_code: 'SERVER_ERROR',
           message: 'Unknown error',
@@ -36,7 +37,7 @@ module.exports = (db) => {
         }
         res.send(data);
       } catch (err) {
-        console.log(err);
+        appLogger(err);
         return res.send({
           error_code: 'SERVER_ERROR',
           message: 'Unknown error',
@@ -57,6 +58,7 @@ module.exports = (db) => {
         const data = await RideServices.addNewRider(db, input);
         res.send(data);
       } catch (err) {
+        appLogger(err);
         return res.send({
           error_code: 'SERVER_ERROR',
           message: 'Unknown error',
